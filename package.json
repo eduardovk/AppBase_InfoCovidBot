@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/eduardovk/AppBase_InfoCovidBot#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "axios": "^0.20.0",
+    "express": "^4.17.1",
+    "intl": "^1.2.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"

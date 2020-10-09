@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 
 const rotaStatus = require('./routes/status'); //importa arquivo status.js
+const rotaPais = require('./routes/pais'); //importa arquivo status.js
 
 //definicao de cabecalhos
 app.use((req, res, next) => {
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/status', rotaStatus); //define a rota status
+app.use('/pais', rotaPais); //define a rota status
 
 //quando não encontra a rota, devolve erro
 app.use((req, res, next) => {
