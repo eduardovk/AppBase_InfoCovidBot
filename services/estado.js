@@ -9,7 +9,13 @@ const router = express.Router();
 class APIEstado {
     constructor() { }
 
-    async informacoesEstado(uf, func) {
+    async getDados(uf) {
+        if(!uf || uf.trim() == ''){
+            return{ //se a UF nao foi informada corretamente, retorna erro
+                status: 500,
+                body: { erro: 'A UF não foi informada corretamente!' }
+            };
+        }
         //Para receber dados de todos estados, eh necessario informar data (yyyymmdd)
         var dataAtual = DateTime.local().setZone('America/Sao_Paulo');
         var dataPesquisa = '';
@@ -24,21 +30,16 @@ class APIEstado {
                     if (res.data.data) { //se houver dados para data atual
                         for (var estado of res.data.data) { //para cada uf da resposta
                             if (estado.uf == uf.toUpperCase()) { //se for a uf pesquisada
-                                var confirmados = formatarNumero(estado.cases); //pega a qtd de confirmados da resposta e formata
-                                var obitos = formatarNumero(estado.deaths); //pega a qtd de obitos da resposta e formata
                                 var atualizadoEm = dataHora(estado.datetime); //pega ultima data de atualizacao e formata
                                 response = {
                                     status: 200,
                                     body: {
                                         uf: estado.uf,
+                                        confirmados: formatarNumero(estado.cases),
+                                        obitos: formatarNumero(estado.deaths),
                                         atualizado_em: atualizadoEm
                                     }
                                 };
-                                if(func == 'estadoCasos'){
-                                    response.body.confirmados = confirmados; //adiciona qtd de confirmados a resposta
-                                }else{
-                                    response.body.obitos = obitos; //adiciona qtd de obitos a resposta
-                                }
                                 retornou = true;
                                 break;
                             }
@@ -48,22 +49,21 @@ class APIEstado {
                 .catch(function (error) { //.catch executa se houver problema na solicitacao
                     response = {
                         status: 500,
-                        body: {erro: 'Erro ao solicitar request -> ' + error}
+                        body: { erro: 'Erro ao solicitar request -> ' + error }
                     };
                     retornou = true;
                 });
             contadorDias++; //aumenta a qtd de dias anteriores na data para pesquisar
-            if(contadorDias > limiteDias){ //caso tenha ultrapassado o limite de tentativas
+            if (contadorDias > limiteDias) { //caso tenha ultrapassado o limite de tentativas
                 response = {
                     status: 500,
-                    body: {erro: 'Dados para a UF selecionada não encontrados.'}
+                    body: { erro: 'Dados para a UF selecionada não encontrados.' }
                 };
                 retornou = true;
             }
         }
         return response;
     }
-
 
 }
 
