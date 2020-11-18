@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ApiPais = require('./services/pais');
 const ApiEstado = require('./services/estado');
+const ApiCidade = require('./services/cidade');
 
 router.get('/ping', (req, res) => {
     res.status(200).send('ping! (get)');
@@ -25,6 +26,12 @@ router.get('/dadosEstado/:uf', async (req, res) => {
     res.status(response.status).send(response.body);
 });
 
+router.get('/dadosCidade/:cidade', async (req, res) => {
+    apiCidade = new ApiCidade();
+    let cidade = req.params.cidade;
+    let response = await apiCidade.getDados(cidade); //todas informacoes
+    res.status(response.status).send(response.body);
+});
 //------------------------------------------------------//
 
 //-------- ROTAS POST ----------------------------------//
@@ -44,6 +51,12 @@ router.post('/', async (req, res) => {
             apiEstado = new ApiEstado();
             uf = req.body.uf;
             response = await apiEstado.getDados(uf); //todas informacoes
+            res.status(response.status).send(response.body);
+            break;
+        case 'dadosCidade':
+            apiCidade = new ApiCidade();
+            cidade = req.body.cidade;
+            response = await apiCidade.getDados(cidade); //todas informacoes
             res.status(response.status).send(response.body);
             break;
         default:
