@@ -2,39 +2,10 @@ const express = require('express');
 const axios = require('axios');
 const dataHora = require('../helpers/dataHora');
 const formatarNumero = require('../helpers/numeros');
+const nomeEstado = require('../helpers/nomeEstado');
 const { DateTime } = require("luxon");
 
 const router = express.Router();
-
-const nomeEstados ={
-     'AC': 'Acre',
-     'AL': 'Alagoas',
-     'AP': 'Amapá',
-     'AM': 'Amazonas',
-     'BA': 'Bahia',
-     'CE': 'Ceará',
-     'DF': 'Distrito Federal',
-     'ES': 'Espírito Santo',
-     'GO': 'Goías',
-     'MA': 'Maranhão',
-     'MT': 'Mato Grosso',
-     'MS': 'Mato Grosso do Sul',
-     'MG': 'Minas Gerais',
-     'PA': 'Pará',
-     'PB': 'Paraíba',
-     'PR': 'Paraná',
-     'PE': 'Pernambuco',
-     'PI': 'Piauí',
-     'RJ': 'Rio de Janeiro',
-     'RN': 'Rio Grande do Norte',
-     'RS': 'Rio Grande do Sul',
-     'RO': 'Rondônia',
-     'RR': 'Roraíma',
-     'SC': 'Santa Catarina',
-     'SP': 'São Paulo',
-     'SE': 'Sergipe',
-     'TO': 'Tocantins'
-};
 
 class APIEstado {
     constructor() { }
@@ -65,7 +36,7 @@ class APIEstado {
                                     status: 200,
                                     body: {
                                         uf: estado.uf,
-                                        nome: nomeEstados[estado.uf],
+                                        nome: nomeEstado(estado.uf),
                                         confirmados: formatarNumero(estado.cases),
                                         obitos: formatarNumero(estado.deaths),
                                         atualizado_em: atualizadoEm
