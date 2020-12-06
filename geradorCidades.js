@@ -8,6 +8,10 @@ const { exception } = require('console')
 const { exit } = require('process');
 var fs = require('fs');
 
+const ufs = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO',
+    'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+    'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
+
 function removeAcentos(nome) {
     var str = nome.replace(/[àáâãä]/g, 'a');
     str = str.replace(/[èéêë]/g, 'e');
@@ -56,11 +60,13 @@ async function cidadesPorUF(uf) {
     return cidades;
 }
 
-async function saveToCSV(cidades, output) {
+async function saveToCSV(cidades, output, incluirUF) {
     try {
         var str = "";
         for (cidade of cidades) {
-            let linha = "Cidades," + cidade.nome;
+            let linha = "Cidades,"
+            if (incluirUF) linha += incluirUF + ","; //a UF nao pode ser incluida no csv caso este seja utilizado diretamente no watson 
+            linha += cidade.nome;
             if (cidade.nome_sem_acento) linha += "," + cidade.nome_sem_acento;
             if (cidade.nome_sem_hifen) linha += "," + cidade.nome_sem_hifen;
             if (cidade.nome_sem_acento_hifen) linha += "," + cidade.nome_sem_acento_hifen;
@@ -74,13 +80,24 @@ async function saveToCSV(cidades, output) {
     }
 }
 
-async function gerarCSVCidades(uf, output) {
+async function gerarCSVCidades(uf, output, incluirUF = false) {
     cidadesPorUF(uf).then(async cidades => {
-        await saveToCSV(cidades, output);
+        //caso incluirUF seja true, inclui campo UF no csv (apenas se for utilizar o csv para salvar no bd)
+        //a UF nao pode ser incluida no csv caso este seja utilizado diretamente no watson 
+        incluirUF = incluirUF ? uf : false;
+        await saveToCSV(cidades, output, incluirUF);
     })
         .catch(e => console.log(e));
 }
 
-// Exemplo de execução:
+// Exemplo de execução 1:
+//gerar csv das cidades do RS para usar como entidade no watson
 // gerarCSVCidades('RS', './cidadesRS.csv');
 
+// Exemplo de execução 2:
+//gerar csv de todas as cidades do Brasil incluindo campo UF, para usar para outros propositos (salvar em um bd)
+// (async () => {
+//     for (uf of ufs) {
+//         await gerarCSVCidades(uf, './cidades' + uf + '.csv', true);
+//     }
+// })();
