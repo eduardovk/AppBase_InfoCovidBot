@@ -1,5 +1,12 @@
-module.exports = function toTitleCase(str){
-    return str.replace(/\w\S*/g, function (txt) {
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
+module.exports = function toTitleCase(str) {
+    var palavras = str.split(" ");
+    var strFinal = "";
+    for (var palavra of palavras) {
+        if (palavra.length > 2 && palavra.toLowerCase() != "das" && palavra.toLowerCase() != "dos") {
+            strFinal += palavra.charAt(0).toUpperCase() + palavra.slice(1) + " "
+        } else {
+            strFinal += palavra.toLowerCase() + " ";
+        }
+    }
+    return strFinal.trim();
 }
