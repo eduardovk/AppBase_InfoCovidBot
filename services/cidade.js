@@ -14,6 +14,11 @@ const router = express.Router();
 class APICidade {
     constructor() { }
 
+    limparParametro(cidade){
+        cidade = cidade.replace(/cidade do|cidade de|cidade/g, "");
+        return cidade.trim();
+    }
+
     async getDados(cidade) {
         if (!cidade || cidade.trim() == '') {
             return { //se a cidade nao foi informada corretamente, retorna erro
@@ -22,6 +27,7 @@ class APICidade {
             };
         }
 
+        cidade = this.limparParametro(cidade);
         var param = encodeURI(titleCase(cidade)); //capitaliza a string e filtra para parametro url
 
         var response = await axios.get('https://api.brasil.io/v1/dataset/covid19/caso/data/?city=' + param + '&format=json', options) //solicita dados a api brasil.io
