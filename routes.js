@@ -59,6 +59,12 @@ router.post('/', async (req, res) => {
             response = await apiCidade.getDados(cidade); //todas informacoes
             res.status(response.status).send(response.body);
             break;
+        case 'dadosDuplicata':
+            apiCidade = new ApiCidade();
+            cidade = req.body.cidade;
+            response = await apiCidade.getDados(cidade, true); //todas informacoes
+            res.status(response.status).send(response.body);
+            break;
         default:
             res.status(404).send({
                 erro: 'Requisição não identificada'

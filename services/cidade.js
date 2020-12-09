@@ -14,12 +14,12 @@ const router = express.Router();
 class APICidade {
     constructor() { }
 
-    limparParametro(cidade){
+    limparParametro(cidade) {
         cidade = cidade.replace(/cidade do|cidade de|cidade/g, "");
         return cidade.trim();
     }
 
-    async getDados(cidade) {
+    async getDados(cidade, duplicata = false) {
         if (!cidade || cidade.trim() == '') {
             return { //se a cidade nao foi informada corretamente, retorna erro
                 status: 500,
@@ -33,17 +33,37 @@ class APICidade {
         var response = await axios.get('https://api.brasil.io/v1/dataset/covid19/caso/data/?city=' + param + '&format=json', options) //solicita dados a api brasil.io
             .then(function (response) { //.then executa se a solicitacao responder sem erros
                 if (response.data.results) {
-                    var info = response.data.results[0]; //primeiro resultado da lista, o mais atualizado
-                    return {
-                        status: 200,
-                        body: {
-                            cidade: info.city,
-                            estado: nomeEstado(info.state),
-                            confirmados: formatarNumero(info.confirmed),
-                            obitos: formatarNumero(info.deaths),
-                            atualizado_em: dataHora(info.date, false)
+                    if (duplicata) {
+                        var resposta = "";
+                        var ufs = [];
+                        for (var result of response.data.results) {
+                            if (!ufs.includes(result.state)) {
+                                ufs.push(result.state);
+                                resposta += 'Na cidade de ' + result.city + ', localizada no estado ' + nomeEstado(result.state) + ', ' +
+                                    'temos a quantidade de ' + formatarNumero(result.confirmed) + ' casos confirmados e ' + formatarNumero(result.deaths) +
+                                    ' óbitos. Dados atualizados em ' + dataHora(result.date, false) + '.\n ';
+                            }
                         }
-                    };
+                        return {
+                            status: 200,
+                            body: {
+                                mensagem: 'Existem no Brasil ' + ufs.length + ' cidades com o nome ' + cidade + '.\n ' + resposta
+                            }
+                        };
+                    } else {
+                        var info = response.data.results[0]; //primeiro resultado da lista, o mais atualizado
+                        return {
+                            status: 200,
+                            body: {
+                                cidade: info.city,
+                                estado: nomeEstado(info.state),
+                                confirmados: formatarNumero(info.confirmed),
+                                obitos: formatarNumero(info.deaths),
+                                atualizado_em: dataHora(info.date, false)
+                            }
+                        };
+                    }
+
                 }
             })
             .catch(function (error) { //.catch executa se houver problema na solicitacao
