@@ -41,13 +41,13 @@ class APICidade {
                                 ufs.push(result.state);
                                 resposta += 'Na cidade de ' + result.city + ', localizada no estado ' + nomeEstado(result.state) + ', ' +
                                     'temos a quantidade de ' + formatarNumero(result.confirmed) + ' casos confirmados e ' + formatarNumero(result.deaths) +
-                                    ' óbitos. Dados atualizados em ' + dataHora(result.date, false) + '.\n ';
+                                    ' óbitos. Dados atualizados em ' + dataHora(result.date, false) + '.\n\n';
                             }
                         }
                         return {
                             status: 200,
                             body: {
-                                mensagem: 'Existem no Brasil ' + ufs.length + ' cidades com o nome ' + cidade + '.\n ' + resposta
+                                mensagem: 'Existem no Brasil ' + ufs.length + ' cidades com o nome ' + cidade + '.\n\n' + resposta
                             }
                         };
                     } else {
